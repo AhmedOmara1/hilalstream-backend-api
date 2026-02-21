@@ -13,15 +13,21 @@ import { useToast } from '@/hooks/use-toast';
 
 type ProgramOption = { id: string; title_en: string };
 type DownloadLink = { quality: string; url: string };
+type VideoServer = { name: string; url: string; type: string; quality: string };
 type EpisodeForm = {
   program_id: string; episode_number: number; title_ar: string;
-  title_en: string; video_servers: string; download_url: string;
+  title_en: string; video_servers: VideoServer[]; download_url: string;
   download_links: DownloadLink[];
 };
 
+const defaultServers: VideoServer[] = [
+  { name: "Server 1", url: "", type: "embed", quality: "auto" },
+  { name: "Server 2", url: "", type: "embed", quality: "auto" },
+];
+
 const emptyForm: EpisodeForm = {
   program_id: '', episode_number: 1, title_ar: '', title_en: '',
-  video_servers: '[]', download_url: '', download_links: [],
+  video_servers: defaultServers.map(s => ({ ...s })), download_url: '', download_links: [],
 };
 
 const qualityOptions = ['240p', '360p', '480p', '720p', '1080p'];
@@ -59,7 +65,9 @@ export default function AdminProgramEpisodes() {
     setForm({
       program_id: ep.program_id, episode_number: ep.episode_number,
       title_ar: ep.title_ar ?? '', title_en: ep.title_en ?? '',
-      video_servers: JSON.stringify(ep.video_servers ?? [], null, 2),
+      video_servers: Array.isArray(ep.video_servers) && ep.video_servers.length > 0
+        ? (ep.video_servers as VideoServer[])
+        : defaultServers.map(s => ({ ...s })),
       download_url: ep.download_url ?? '',
       download_links: Array.isArray(ep.download_links) ? ep.download_links : [],
     });
@@ -87,11 +95,7 @@ export default function AdminProgramEpisodes() {
   };
 
   const save = async () => {
-    let servers;
-    try { servers = JSON.parse(form.video_servers); } catch {
-      toast({ title: t('admin.invalidJson'), description: t('admin.videoServersJsonError'), variant: 'destructive' });
-      return;
-    }
+    const servers = form.video_servers.filter(s => s.url.trim());
     const payload = {
       program_id: form.program_id, episode_number: form.episode_number,
       title_ar: form.title_ar, title_en: form.title_en,
@@ -123,7 +127,7 @@ export default function AdminProgramEpisodes() {
     }
   };
 
-  const f = (key: keyof EpisodeForm, value: string | number) => setForm(p => ({ ...p, [key]: value }));
+  const f = (key: keyof EpisodeForm, value: string | number | VideoServer[]) => setForm(p => ({ ...p, [key]: value }));
 
   return (
     <div className="space-y-4">
@@ -235,9 +239,32 @@ export default function AdminProgramEpisodes() {
                 </div>
               ))}
             </div>
-            <div className="col-span-2 space-y-1">
-              <label className="text-sm text-muted-foreground">{t('admin.videoServers')}</label>
-              <Textarea rows={5} className="font-mono text-sm" value={form.video_servers} onChange={e => f('video_servers', e.target.value)} />
+            <div className="col-span-2 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-sm text-muted-foreground">{t('admin.videoServers')}</label>
+                <Button type="button" variant="outline" size="sm" onClick={() => setForm(p => ({ ...p, video_servers: [...p.video_servers, { name: `Server ${p.video_servers.length + 1}`, url: '', type: 'embed', quality: 'auto' }] }))}>
+                  <Plus className="h-3 w-3 me-1" />إضافة سيرفر
+                </Button>
+              </div>
+              {form.video_servers.map((server, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <Input className="w-28" value={server.name} onChange={e => {
+                    const updated = [...form.video_servers];
+                    updated[i] = { ...updated[i], name: e.target.value };
+                    setForm(p => ({ ...p, video_servers: updated }));
+                  }} />
+                  <Input className="flex-1" placeholder="Embed URL" value={server.url} onChange={e => {
+                    const updated = [...form.video_servers];
+                    updated[i] = { ...updated[i], url: e.target.value };
+                    setForm(p => ({ ...p, video_servers: updated }));
+                  }} />
+                  {form.video_servers.length > 1 && (
+                    <Button type="button" variant="ghost" size="icon" onClick={() => {
+                      setForm(p => ({ ...p, video_servers: p.video_servers.filter((_, j) => j !== i) }));
+                    }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
           <DialogFooter>
