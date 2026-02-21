@@ -85,7 +85,7 @@ serve(async (req) => {
       auth: { user: SMTP_USER, pass: SMTP_PASS },
     });
 
-    const siteUrl = "https://hilal-stream.lovable.app";
+    const siteUrl = "https://hilalstream.site";
     const seriesUrl = `${siteUrl}/series/${series_slug}`;
     const seriesTitle = series_title_en || "New Series";
     const seriesTitleAr = series_title_ar || "مسلسل جديد";

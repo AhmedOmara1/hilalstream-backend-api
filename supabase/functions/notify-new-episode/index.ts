@@ -24,7 +24,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const referenceId = episode_id || series_id;
-    const siteUrl = "https://hilal-stream.lovable.app";
+    const siteUrl = "https://hilalstream.site";
     const watchUrl = `${siteUrl}/watch/${series_slug}/${episode_number}`;
     const epTitle = episode_title_en || `Episode ${episode_number}`;
     const epTitleAr = episode_title_ar || `الحلقة ${episode_number}`;
