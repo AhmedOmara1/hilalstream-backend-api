@@ -133,12 +133,12 @@ function buildWelcomeEmail(name: string) {
         </div>
       </div>
       <div style="text-align:center;margin:32px 0;">
-        <a href="https://hilal-stream.lovable.app" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#c9a84c 0%,#e8c65a 100%);color:#0a0a0a;text-decoration:none;border-radius:12px;font-weight:700;font-size:15px;">
+        <a href="https://hilalstream.site" style="display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#c9a84c 0%,#e8c65a 100%);color:#0a0a0a;text-decoration:none;border-radius:12px;font-weight:700;font-size:15px;">
           Start Watching Now →
         </a>
       </div>
       <p style="color:#6b7280;font-size:13px;text-align:center;margin:0;">
-        If you have any questions, reply to this email or visit our <a href="https://hilal-stream.lovable.app/contact" style="color:#c9a84c;">Contact Page</a>.
+        If you have any questions, reply to this email or visit our <a href="https://hilalstream.site/contact" style="color:#c9a84c;">Contact Page</a>.
       </p>
     </div>
     <div style="padding:20px 32px;border-top:1px solid #2a2a4a;text-align:center;">
