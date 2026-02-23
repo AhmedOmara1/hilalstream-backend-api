@@ -9,6 +9,7 @@ import WatchPartyChat from '@/components/WatchPartyChat';
 import { removePopAdScript, allowPopAdScript } from '@/lib/popAd';
 import { useLocale } from '@/hooks/useLocale';
 import { supabase } from '@/integrations/supabase/client';
+import { useStreak } from '@/hooks/useStreak';
 import type { Series, Episode } from '@/types';
 
 const mapDbProgram = (s: any): Series => ({
@@ -32,6 +33,7 @@ const WatchProgram = () => {
   const { t } = useTranslation();
   const { getTitle, isArabic } = useLocale();
   const navigate = useNavigate();
+  const { recordWatch } = useStreak();
   const [activeServer, setActiveServer] = useState(0);
   const [program, setProgram] = useState<Series | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -67,6 +69,7 @@ const WatchProgram = () => {
   useEffect(() => {
     if (!loading && episodes.length > 0) {
       const ep = episodes.find(e => e.episodeNumber === epNum);
+      if (ep) recordWatch();
       if (ep && ep._id.length > 10) {
         supabase.rpc('increment_program_episode_views', { _episode_id: ep._id }).then(() => {});
       }
