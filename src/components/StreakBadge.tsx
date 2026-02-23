@@ -13,7 +13,7 @@ const StreakBadge = ({ currentStreak, longestStreak }: StreakBadgeProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const isRamadanStreak = currentStreak >= 7;
 
-  if (currentStreak === 0) return null;
+  // Always show the streak badge, even when streak is 0
 
   return (
     <div className="relative">
