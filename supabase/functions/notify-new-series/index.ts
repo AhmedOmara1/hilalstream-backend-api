@@ -135,6 +135,7 @@ serve(async (req) => {
       .eq("role", "admin");
     const adminIds = (adminRoles || []).map((r: any) => r.user_id);
 
+    const adminEmailLogs: any[] = [];
     for (const adminId of adminIds) {
       const adminEmail = authMap.get(adminId);
       if (adminEmail) {
@@ -145,10 +146,15 @@ serve(async (req) => {
             subject: `🔔 Admin: New Series Added - ${seriesTitle}`,
             html: buildAdminSeriesEmail(seriesTitle, seriesTitleAr, seriesUrl, poster_image),
           });
+          adminEmailLogs.push({ user_id: adminId, type: "admin_new_series", reference_id: series_id });
         } catch (e) {
           console.error(`Failed admin email to ${adminEmail}:`, e);
         }
       }
+    }
+
+    if (adminEmailLogs.length > 0) {
+      await supabase.from("email_logs").insert(adminEmailLogs);
     }
 
     const adminNotifications = adminIds.map((adminId: string) => ({

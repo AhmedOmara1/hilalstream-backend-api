@@ -62,6 +62,7 @@ serve(async (req) => {
 
     console.log(`Sending admin emails to ${adminIds.length} admins`);
 
+    const adminEmailLogs: any[] = [];
     for (const adminId of adminIds) {
       const adminEmail = authMap.get(adminId);
       if (adminEmail) {
@@ -73,10 +74,15 @@ serve(async (req) => {
             html: buildAdminEpisodeEmail(seriesTitle, seriesTitleAr, epTitle, epTitleAr, episode_number, watchUrl),
           });
           console.log(`Admin email sent to ${adminEmail}`);
+          adminEmailLogs.push({ user_id: adminId, type: "admin_new_episode", reference_id: referenceId });
         } catch (e) {
           console.error(`Failed admin email to ${adminEmail}:`, e);
         }
       }
+    }
+
+    if (adminEmailLogs.length > 0) {
+      await supabase.from("email_logs").insert(adminEmailLogs);
     }
 
     // Admin in-app notifications
