@@ -21,8 +21,28 @@ export const useStreak = () => {
       .eq('id', user.id)
       .single();
     if (data) {
+      let currentStreak = data.current_streak ?? 0;
+      const lastDate = data.last_watch_date;
+
+      // Auto-reset streak if user missed a day
+      if (lastDate && currentStreak > 0) {
+        const today = new Date().toISOString().slice(0, 10);
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+        if (lastDate !== today && lastDate !== yesterdayStr) {
+          // Streak is broken - reset in DB
+          currentStreak = 0;
+          await supabase
+            .from('profiles')
+            .update({ current_streak: 0 })
+            .eq('id', user.id);
+        }
+      }
+
       setStreak({
-        currentStreak: data.current_streak ?? 0,
+        currentStreak,
         longestStreak: data.longest_streak ?? 0,
         lastWatchDate: data.last_watch_date,
       });
