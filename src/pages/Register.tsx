@@ -31,7 +31,7 @@ const Register = () => {
       email,
       password,
       options: {
-        data: { name },
+        data: { name, newsletter_opt_in: newsletterOptIn, favorites_notifications: favoritesNotifications },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -39,17 +39,6 @@ const Register = () => {
       setLoading(false);
       toast({ title: t('common.error'), description: error.message, variant: 'destructive' });
       return;
-    }
-
-    // Update notification preferences in profile
-    if (signUpData.user) {
-      await supabase
-        .from('profiles')
-        .update({
-          newsletter_opt_in: newsletterOptIn,
-          favorites_notifications: favoritesNotifications,
-        })
-        .eq('id', signUpData.user.id);
     }
 
     setLoading(false);
